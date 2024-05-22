@@ -6,6 +6,5 @@ public class CalendarNote : Entity
     public DateOnly? Date { get; set; }
     public TimeOnly? Time { get; set; }
 
-    public string UserId  { get; set;}
-    public User User { get; set; }
+    public string UserId  { get; set; }
 }

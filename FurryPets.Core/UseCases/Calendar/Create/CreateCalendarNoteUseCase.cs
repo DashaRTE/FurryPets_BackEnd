@@ -6,19 +6,17 @@ namespace FurryPets.Core.UseCases;
 public class CreateCalendarNoteUseCase
 {
     private readonly ICalendarNoteRepository _calendarNoteRepository;
-    private readonly IUserRepository _userRepository;
 
-    public CreateCalendarNoteUseCase(ICalendarNoteRepository calendarNoteRepository, IUserRepository userRepository)
+    public CreateCalendarNoteUseCase(ICalendarNoteRepository calendarNoteRepository)
     {
         _calendarNoteRepository = calendarNoteRepository;
-        _userRepository = userRepository;
     }
 
     public async Task<ResultResponse> HandleAsync(CreateCalendarNoteRequest request)
     {
         await _calendarNoteRepository.CreateCalendarNoteAsync(request.UserId, request.Reason, request.Note, request.Date, request.Time);
 
-        await _userRepository.CommitAsync();
+        await _calendarNoteRepository.CommitAsync();
 
         return new() { StatusCode = HttpStatusCode.Created };
     }

@@ -1,14 +1,7 @@
 ﻿using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
-using FurryPets.Core.Enumerations;
-using FurryPets.Shared;
-using FurryPets.Shared.Auth;
-using FurryPets.Shared.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using FurryPets.Api.Configuration;
 using FurryPets.Di.DiManagers;
+using Microsoft.OpenApi.Models;
 
 namespace FurryPets.API;
 
@@ -29,34 +22,21 @@ public class Startup
 
         services.AddCors();
 
-        services.AddMvcCore(static mvcOptions => mvcOptions.EnableEndpointRouting = false)
-            .AddAuthorization(static options =>
-            {
-                options.AddPolicy(RoleType.User.ToString(), static policy => policy.Requirements.Add(new RoleRequirement(RoleType.User.ToString())));
-            })
-            .ConfigureApiBehaviorOptions(static options =>
-                options.InvalidModelStateResponseFactory = static actionContext =>
-                {
-                    var modelState = actionContext.ModelState;
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "FurryPets API", Version = "v1" });
+        });
 
-                    return new BadRequestObjectResult(FormatOutput(modelState));
-                })
-            .AddDataAnnotations()
+        services.AddMvcCore(static mvcOptions => mvcOptions.EnableEndpointRouting = false)
             .AddApiExplorer();
 
-        services.AddMapper()
-            .AddIdentity()
-            .AddJwtAuthentication(Configuration)
-            .AddSingleton<IAuthorizationHandler, RoleHandler>()
-            .AddSwagger();
+        services.AddMapper();
 
         services.AddTransient<HttpClient>();
 
         services.AddData(Configuration.GetConnectionString("DefaultConnection")!)
-            .AddJwt()
             .AddUseCases()
-            .AddServices()
-            .AddOptions(Configuration);
+            .AddServices();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -78,18 +58,6 @@ public class Startup
 
         app.UseRouting();
 
-        app.UseAuthentication();
-        app.UseAuthorization();
-
         app.UseEndpoints(static endpoints => endpoints.MapControllers());
-    }
-
-    private static ValidationResultModel FormatOutput(ModelStateDictionary modelState)
-    {
-        var result = new ValidationResultModel(modelState.Where(static modelStateEntry => modelStateEntry.Value?.ValidationState == ModelValidationState.Invalid)
-            .Select(static modelStateEntry =>
-                $"{modelStateEntry.Key.ToLowerFirstChar()}: {string.Join(" ", modelStateEntry.Value!.Errors.Select(static error => error.ErrorMessage))}"));
-
-        return result;
     }
 }

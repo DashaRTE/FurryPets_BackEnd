@@ -1,4 +1,4 @@
-﻿{
+{
   "profiles": {
     "FurryPets.Api": {
       "commandName": "Project",
@@ -19,6 +19,16 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchUrl": "https://localhost:5000/{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HTTPS_PORT": "5001",
+        "ASPNETCORE_URLS": "https://+:443;http://+:80"
+      },
+      "distributionName": ""
     }
   },
   "iisSettings": {

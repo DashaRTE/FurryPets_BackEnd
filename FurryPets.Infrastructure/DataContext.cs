@@ -1,11 +1,10 @@
 ﻿using FurryPets.Infrastructure.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FurryPets.Infrastructure;
-public class DataContext : IdentityDbContext<User>
+public class DataContext : DbContext
 {
     public DataContext(DbContextOptions options) : base(options)
     {
@@ -13,20 +12,14 @@ public class DataContext : IdentityDbContext<User>
         Database.EnsureCreated();
     }
 
-    public DataContext()
-    {
-        
-    }
+    public DataContext() { }
 
-    public override DbSet<User> Users { get; set; }
-    public virtual DbSet<Animal> Animals { get; set; }
     public virtual DbSet<CalendarNote> CalendarNotes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        Configuration.ModelBuilder.BuildUser(modelBuilder.Entity<User>());
         Configuration.ModelBuilder.BuildCalendarNote(modelBuilder.Entity<CalendarNote>());
     }
 

@@ -11,8 +11,6 @@ public static class MapperDi
 		var mappingConfig = new MapperConfiguration(static mapperConfigurationExpression =>
 		{
             mapperConfigurationExpression.AddProfile(new CalendarNoteMapper());
-            mapperConfigurationExpression.AddProfile(new AnimalMapper());
-            mapperConfigurationExpression.AddProfile(new UserMapper());
 		});
 
 		var mapper = mappingConfig.CreateMapper();
